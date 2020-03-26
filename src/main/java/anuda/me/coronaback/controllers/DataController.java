@@ -8,14 +8,17 @@ import anuda.me.coronaback.external_responses.HerokuAllResponse;
 import anuda.me.coronaback.external_responses.HerokuCountriesResponse;
 import anuda.me.coronaback.helpers.APICall;
 import anuda.me.coronaback.repositories.HistoryRepository;
+import anuda.me.coronaback.responses.GlobalData;
 import anuda.me.coronaback.responses.SLData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -87,5 +90,58 @@ public class DataController {
             return new ResponseEntity<Object>(slData, HttpStatus.OK);
 
 
+    }
+
+    @RequestMapping(value = "stats/global", method = RequestMethod.GET)
+    public ResponseEntity<?> getStatsGlobal(){
+
+
+        HPBResponse hpbResponse = new APICall().slhpbCall();
+        HPBData hpbData = hpbResponse.getData();
+        HerokuAllResponse herokuAllResponse = new APICall().herokuAllCall();
+
+        GlobalData globalData = new GlobalData();
+
+        globalData.setConfirmedCases(herokuAllResponse.getCases());
+        globalData.setNewCases(hpbData.getGlobal_new_cases());
+        globalData.setRecoveries(herokuAllResponse.getRecovered());
+        globalData.setDeaths(herokuAllResponse.getDeaths());
+        globalData.setNewDeaths(hpbData.getGlobal_new_deaths());
+
+        return new ResponseEntity<Object>(globalData, HttpStatus.OK);
+
+
+    }
+
+    @RequestMapping(value = "stats", method = RequestMethod.GET)
+    public ResponseEntity<?> getStatsByCountry(@RequestParam String country){
+
+        List<HerokuCountriesResponse> herokuCountriesResponse = new APICall().herokuCountriesCall();
+
+        HerokuCountriesResponse countryData = new HerokuCountriesResponse();
+        for(int i=0; i<herokuCountriesResponse.size(); i++){
+
+            if(herokuCountriesResponse.get(i).getCountry().equals(country)){
+                countryData = herokuCountriesResponse.get(i);
+            }
+        }
+
+        return new ResponseEntity<Object>(countryData, HttpStatus.OK);
+    }
+
+
+
+    @RequestMapping(value = "countries", method = RequestMethod.GET)
+    public ResponseEntity<?> getCountriesListForDropDown(){
+
+        List<HerokuCountriesResponse> herokuCountriesResponse = new APICall().herokuCountriesCall();
+        List<String> countries = new ArrayList<>();
+
+        for (int i = 0; i < herokuCountriesResponse.size(); i++) {
+
+            countries.add(herokuCountriesResponse.get(i).getCountry());
+
+        }
+        return new ResponseEntity<Object>(countries, HttpStatus.OK);
     }
 }
