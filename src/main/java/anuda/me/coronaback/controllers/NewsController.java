@@ -16,6 +16,44 @@ import java.util.List;
 @RequestMapping("news")
 public class NewsController {
 
+    @RequestMapping(value = "local", method = RequestMethod.GET)
+    public ResponseEntity<?> getLocalNews(){
+
+        List<NewsAPIArticle> newsFirstArticles = new APICall().localNewsAPICall("https://www.newsfirst.lk/feed/");
+        List<NewsAPIArticle> adaDeranaArticles = new APICall().localNewsAPICall("http://www.adaderana.lk/rss.php");
+
+        List<NewsAPIArticle> localNewsArticles = new ArrayList<>();
+
+        for(int i = 0; i<10; i++){
+            localNewsArticles.add(newsFirstArticles.get(i));
+            localNewsArticles.add(adaDeranaArticles.get(i));
+        }
+
+        for(int i=10; i<20; i++){
+            localNewsArticles.add(adaDeranaArticles.get(i));
+        }
+
+        return new ResponseEntity<Object>(localNewsArticles, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "local/min", method = RequestMethod.GET)
+    public ResponseEntity<?> getLocalNewsMinified(){
+
+        List<NewsAPIArticle> newsFirstArticles = new APICall().localNewsAPICall("https://www.newsfirst.lk/feed/");
+        List<NewsAPIArticle> adaDeranaArticles = new APICall().localNewsAPICall("http://www.adaderana.lk/rss.php");
+
+        List<NewsAPIArticle> localNewsArticles = new ArrayList<>();
+
+        for(int i = 0; i<3; i++){
+            localNewsArticles.add(newsFirstArticles.get(i));
+            localNewsArticles.add(adaDeranaArticles.get(i));
+        }
+
+        return new ResponseEntity<Object>(localNewsArticles, HttpStatus.OK);
+
+    }
+
     @RequestMapping(value = "global", method = RequestMethod.GET)
     public ResponseEntity<?> getGlobalNews() {
 

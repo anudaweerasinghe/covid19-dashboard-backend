@@ -5,41 +5,78 @@ import com.mashape.unirest.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.GetRequest;
+import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class APICall {
 
-//    public List<NewsAPIArticle> localnewsAPICall(String source){
-//
-//        try{
-//
-//        URL feedSource = new URL("http://www.adaderana.lk/rss.php");
-//        if(source.equals("derana")){
-//            feedSource = new URL("http://www.adaderana.lk/rss.php");
-//        }else if(source.equals("news-first")){
-//                feedSource = new URL("https://www.newsfirst.lk/feed/");
-//        }
-//
-//        SyndFeedInput input = new SyndFeedInput();
-//        SyndFeed feed = input.build(new XmlReader(feedSource));
-//
-//        System.out.println(feed);
-//
-//        return null;
-//
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    public List<NewsAPIArticle> localNewsAPICall(String source){
+
+        try{
+            URLConnection urlConn = new URL(source).openConnection();
+            String author = "News First";
+
+            if(source.equals("http://www.adaderana.lk/rss.php")){
+
+                author = "Ada Derana";
+
+            }
+
+            urlConn.addRequestProperty("User-Agent", "Mozilla");
+            urlConn.setReadTimeout(5000);
+            urlConn.setConnectTimeout(5000);
+
+            XmlReader reader = null;
+
+            reader = new XmlReader(urlConn);
+            SyndFeed feed = new SyndFeedInput().build(reader);
+            System.out.println("Feed Title: "+ feed.getAuthor());
+
+            List<NewsAPIArticle> newsList = new ArrayList<>();
+
+            for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
+                SyndEntry entry = (SyndEntry) i.next();
+                NewsAPIArticle newsArticle = new NewsAPIArticle();
+                newsArticle.setTitle(entry.getTitle());
+                newsArticle.setAuthor(author);
+                newsArticle.setPublishedAt(String.valueOf(entry.getPublishedDate()));
+                newsArticle.setUrl(entry.getLink());
+
+                String unparsedDesc = entry.getDescription().getValue();
+
+
+                Document html = Jsoup.parse(unparsedDesc);
+
+                Element image = html.select("img").first();
+                String imgUrl = image.absUrl("src");
+                newsArticle.setUrlToImage(imgUrl);
+
+
+                newsArticle.setDescription(entry.getTitle());
+
+                newsList.add(newsArticle);
+            }
+
+            return newsList;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 
     public List<NewsAPIArticle> newsAPICall(String source){
         try {
