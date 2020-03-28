@@ -12,6 +12,15 @@ public class HerokuCountriesResponse {
     private int critical;
     private int casesPerOneMillion;
     private int deathsPerOneMillion;
+    private String firstCase;
+
+    public String getFirstCase() {
+        return firstCase;
+    }
+
+    public void setFirstCase(String firstCase) {
+        this.firstCase = firstCase;
+    }
 
     public String getCountry() {
         return country;

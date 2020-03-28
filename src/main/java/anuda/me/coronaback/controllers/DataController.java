@@ -30,7 +30,7 @@ public class DataController {
     private HistoryRepository historyRepository;
 
     @RequestMapping(value = "graphs", method = RequestMethod.GET)
-    public ResponseEntity<?> getGraphs(){
+    public ResponseEntity<?> getGraphs(@RequestParam(required = false) String type){
 
         try{
 
@@ -51,14 +51,48 @@ public class DataController {
 
 
             List<History> historicalData = historyRepository.findAll();
+            List<String> dates = new ArrayList<>();
+            List<Integer> localNewCases = new ArrayList<>();
+            List<Integer> localConfirmedCases = new ArrayList<>();
+            List<Integer> globalNewCases = new ArrayList<>();
+            List<Integer> globalConfirmedCases = new ArrayList<>();
+
+            for(int i=0; i<historicalData.size();i++){
+                dates.add(historicalData.get(i).getDateText());
+                localConfirmedCases.add(historicalData.get(i).getLocalConfirmedCases());
+                localNewCases.add(historicalData.get(i).getLocalNewCases());
+                globalConfirmedCases.add(historicalData.get(i).getGlobalConfirmedCases());
+                globalNewCases.add(historicalData.get(i).getGlobalNewCases());
+            }
+            if(type!=null) {
+                if (type.equals("dates")) {
+                    return new ResponseEntity<Object>(dates, HttpStatus.OK);
+                } else if (type.equals("ln")) {
+                    return new ResponseEntity<Object>(localNewCases, HttpStatus.OK);
+
+                } else if (type.equals("lc")) {
+                    return new ResponseEntity<Object>(localConfirmedCases, HttpStatus.OK);
+
+                } else if (type.equals("gn")) {
+                    return new ResponseEntity<Object>(globalNewCases, HttpStatus.OK);
+
+                } else if (type.equals("gc")) {
+                    return new ResponseEntity<Object>(globalConfirmedCases, HttpStatus.OK);
+
+                } else {
+                    return new ResponseEntity<Object>(historicalData, HttpStatus.OK);
+                }
+            }
 
             return new ResponseEntity<Object>(historicalData, HttpStatus.OK);
 
         }catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<Object>(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
+
 
     @RequestMapping(value = "stats/sl", method = RequestMethod.GET)
     public ResponseEntity<?> getStatsForSl(){
@@ -116,12 +150,14 @@ public class DataController {
     @RequestMapping(value = "stats", method = RequestMethod.GET)
     public ResponseEntity<?> getStatsByCountry(@RequestParam String country){
 
+        country = country.toLowerCase();
+
         List<HerokuCountriesResponse> herokuCountriesResponse = new APICall().herokuCountriesCall();
 
         HerokuCountriesResponse countryData = new HerokuCountriesResponse();
         for(int i=0; i<herokuCountriesResponse.size(); i++){
 
-            if(herokuCountriesResponse.get(i).getCountry().equals(country)){
+            if(herokuCountriesResponse.get(i).getCountry().toLowerCase().equals(country)){
                 countryData = herokuCountriesResponse.get(i);
             }
         }
