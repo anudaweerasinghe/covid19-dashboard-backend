@@ -13,6 +13,24 @@ public class HerokuCountriesResponse {
     private int casesPerOneMillion;
     private int deathsPerOneMillion;
     private String firstCase;
+    private int totalTests;
+    private int testsPerOneMillion;
+
+    public int getTotalTests() {
+        return totalTests;
+    }
+
+    public void setTotalTests(int totalTests) {
+        this.totalTests = totalTests;
+    }
+
+    public int getTestsPerOneMillion() {
+        return testsPerOneMillion;
+    }
+
+    public void setTestsPerOneMillion(int testsPerOneMillion) {
+        this.testsPerOneMillion = testsPerOneMillion;
+    }
 
     public String getFirstCase() {
         return firstCase;
