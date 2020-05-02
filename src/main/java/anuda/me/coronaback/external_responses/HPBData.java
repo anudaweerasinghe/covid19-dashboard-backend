@@ -18,6 +18,24 @@ public class HPBData {
     private int global_new_deaths;
     private int global_recovered;
     private List<Object> hospital_data;
+    private int total_pcr_testing_count;
+    private List<Object> daily_pcr_testing_data;
+
+    public int getTotal_pcr_testing_count() {
+        return total_pcr_testing_count;
+    }
+
+    public void setTotal_pcr_testing_count(int total_pcr_testing_count) {
+        this.total_pcr_testing_count = total_pcr_testing_count;
+    }
+
+    public List<Object> getDaily_pcr_testing_data() {
+        return daily_pcr_testing_data;
+    }
+
+    public void setDaily_pcr_testing_data(List<Object> daily_pcr_testing_data) {
+        this.daily_pcr_testing_data = daily_pcr_testing_data;
+    }
 
     public String getUpdate_date_time() {
         return update_date_time;
