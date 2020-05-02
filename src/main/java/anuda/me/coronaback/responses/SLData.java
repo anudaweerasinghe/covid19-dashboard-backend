@@ -11,6 +11,15 @@ public class SLData {
     private int newDeaths;
     private double casesPerMillion;
     private double deathsPerMillion;
+    private int totalTests;
+
+    public int getTotalTests() {
+        return totalTests;
+    }
+
+    public void setTotalTests(int totalTests) {
+        this.totalTests = totalTests;
+    }
 
     public int getConfirmedCases() {
         return confirmedCases;

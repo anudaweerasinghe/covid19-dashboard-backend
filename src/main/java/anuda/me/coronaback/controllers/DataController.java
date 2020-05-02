@@ -35,7 +35,11 @@ public class DataController {
         try{
 
             HPBResponse hpbResponse = new APICall().slhpbCall();
+            Thread.sleep(500);
+
             History todaysRecord = historyRepository.findByDateText(hpbResponse.getData().getUpdate_date_time().substring(0, 10));
+
+            Thread.sleep(500);
 
             if(todaysRecord == null){
                 todaysRecord = new History();
@@ -110,6 +114,7 @@ public class DataController {
             slData.setRecoveries(hpbData.getLocal_recovered());
             slData.setDeaths(hpbData.getLocal_deaths());
             slData.setNewDeaths(hpbData.getLocal_new_deaths());
+            slData.setTotalTests(hpbData.getTotal_pcr_testing_count());
 
             for(int i=0; i<herokuCountriesResponse.size(); i++){
 
@@ -151,6 +156,24 @@ public class DataController {
     public ResponseEntity<?> getStatsByCountry(@RequestParam String country){
 
         country = country.toLowerCase();
+
+        if(country.equals("us")){
+            country = "usa";
+        }else if(country.equals("united states of america")){
+            country = "usa";
+        }else if(country.equals("united states")) {
+            country = "usa";
+        }else if(country.equals("united kingdom")){
+            country = "uk";
+        }else if(country.equals("england")){
+            country = "uk";
+        }else if(country.equals("south korea")){
+            country = "s. korea";
+        }else if(country.equals("korea")){
+            country = "s. korea";
+        }else if(country.equals("united arab emirates")){
+            country = "uae";
+        }
 
         List<HerokuCountriesResponse> herokuCountriesResponse = new APICall().herokuCountriesCall();
 
