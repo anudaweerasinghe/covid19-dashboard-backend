@@ -35,25 +35,24 @@ public class DataController {
         try{
 
             HPBResponse hpbResponse = new APICall().slhpbCall();
-            Thread.sleep(500);
+            if(type.equals("ln")) {
 
-            History todaysRecord = historyRepository.findByDateText(hpbResponse.getData().getUpdate_date_time().substring(0, 10));
+                History todaysRecord = historyRepository.findByDateText(hpbResponse.getData().getUpdate_date_time().substring(0, 10));
 
-            Thread.sleep(500);
 
-            if(todaysRecord == null){
-                todaysRecord = new History();
+                if (todaysRecord == null) {
+                    todaysRecord = new History();
+                }
+
+                todaysRecord.setDateText(hpbResponse.getData().getUpdate_date_time().substring(0, 10));
+                todaysRecord.setGlobalConfirmedCases(hpbResponse.getData().getGlobal_total_cases());
+                todaysRecord.setGlobalNewCases(hpbResponse.getData().getGlobal_new_cases());
+                todaysRecord.setLocalConfirmedCases(hpbResponse.getData().getLocal_total_cases());
+                todaysRecord.setLocalNewCases(hpbResponse.getData().getLocal_new_cases());
+
+                historyRepository.save(todaysRecord);
+
             }
-
-            todaysRecord.setDateText(hpbResponse.getData().getUpdate_date_time().substring(0, 10));
-            todaysRecord.setGlobalConfirmedCases(hpbResponse.getData().getGlobal_total_cases());
-            todaysRecord.setGlobalNewCases(hpbResponse.getData().getGlobal_new_cases());
-            todaysRecord.setLocalConfirmedCases(hpbResponse.getData().getLocal_total_cases());
-            todaysRecord.setLocalNewCases(hpbResponse.getData().getLocal_new_cases());
-
-            historyRepository.save(todaysRecord);
-
-
             List<History> historicalData = historyRepository.findAll();
             List<String> dates = new ArrayList<>();
             List<Integer> localNewCases = new ArrayList<>();
